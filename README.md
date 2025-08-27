@@ -1,7 +1,7 @@
-# Labyrinth of Shadows: Algorithm’s Descent
+# Labyrinth of Shadows: Algorithm's Descent
 
 ## 🧩 Description
-**Labyrinth of Shadows: Algorithm’s Descent** is a **roguelike RPG** game for iOS, developed in **Swift**, where the player controls a character to fight dynamically generated monsters using **AI**.  
+**Labyrinth of Shadows: Algorithm's Descent** is a **roguelike RPG** game for iOS, developed in **Swift**, where the player controls a character to fight dynamically generated monsters using **AI**.  
 Every decision made by the player influences how the algorithm creates new enemies and scenarios, making each run unique and unpredictable.  
 
 ## 🎮 Main Features
@@ -16,9 +16,3 @@ Every decision made by the player influences how the algorithm creates new enemi
 - [SwiftUI](https://developer.apple.com/xcode/swiftui/)  
 - for AI/procedural generation (PENDING)
 - [Xcode](https://developer.apple.com/xcode/)  
-
-## 📦 Installation & Usage
-Clone the repository to your local machine:  
-
-```bash
-git clone git@github.com:JotaGalera/RolGameApp.git
