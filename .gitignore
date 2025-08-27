@@ -25,3 +25,6 @@ playground.xcworkspace
 # App-specific
 *.ipa
 *.app
+
+#Environment
+.env
