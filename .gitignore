@@ -1,0 +1,27 @@
+# Xcode
+DerivedData/
+build/
+*.xcworkspace
+!default.xcworkspace
+*.xcuserdata
+*.moved-aside
+*.swp
+*.xcuserstate
+
+# Swift Package Manager
+/.build/
+Package.resolved
+
+# Xcode Archives
+*.xcarchive
+
+# Playground
+timeline.xctimeline
+playground.xcworkspace
+
+# macOS
+.DS_Store
+
+# App-specific
+*.ipa
+*.app
