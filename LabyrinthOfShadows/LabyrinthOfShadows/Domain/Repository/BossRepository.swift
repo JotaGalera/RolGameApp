@@ -8,5 +8,5 @@
 import Foundation
 
 protocol BossRepository {
-    func getBosses() async throws -> [Boss]
+    func getBosses(prompt: String) async throws -> Boss
 }

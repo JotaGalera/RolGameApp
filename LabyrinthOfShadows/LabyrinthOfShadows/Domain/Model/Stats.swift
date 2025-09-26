@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum Stats {
+enum Stats: String, Codable, CaseIterable {
     case health
     case strength
     case agility

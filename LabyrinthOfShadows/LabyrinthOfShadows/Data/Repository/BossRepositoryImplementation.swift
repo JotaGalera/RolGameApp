@@ -7,17 +7,14 @@
 
 import Foundation
 
-class BossRepositoryImplementation: BossRepository {
-    let generatorDataSource: AIServiceDataSource
+struct BossRepositoryImplementation: BossRepository {
+    private let generatorDataSource: BossDataSource
     
-    init(generatorDataSource: AIServiceDataSource) {
+    init(generatorDataSource: BossDataSource) {
         self.generatorDataSource = generatorDataSource
     }
     
-    func getBosses() async throws -> [Boss] {
-        let textGenerationAIResult = generatorDataSource
-        
-        // Parse text to Domain
-        return [Boss(name: "Unknown", abilities: ["Default attack"], stats: [.health : 100, .strength : 10, .agility : 10, .intelligence : 10, .luck : 10, .dexterity : 10], description: "Stupid default boss")]
+    func getBosses(prompt: String) async throws -> Boss {
+        return try await generatorDataSource.generateBoss(prompt: prompt)
     }
 }

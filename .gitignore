@@ -28,3 +28,6 @@ playground.xcworkspace
 
 #Environment
 .env
+
+#Keys
+Keys.plist
