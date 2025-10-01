@@ -14,5 +14,29 @@ Every decision made by the player influences how the algorithm creates new enemi
 ## 🚀 Tech Stack
 - [Swift](https://developer.apple.com/swift/)  
 - [SwiftUI](https://developer.apple.com/xcode/swiftui/)  
-- for AI/procedural generation (PENDING)
-- [Xcode](https://developer.apple.com/xcode/)  
+- [Foundation Models](https://developer.apple.com/documentation/FoundationModels)
+- [Xcode](https://developer.apple.com/xcode/)
+
+## Game Description
+
+Game: A run is made up of a list of combats. Each run progresses as the player faces a sequence of combats against procedurally generated bosses.
+
+Combat: Each combat involves two participants: the player and a boss. Combat is turn-based and ends when either the player or the boss has no remaining "health".
+
+Turns: On a turn the active participant can attack. Turn order priority is determined by the Agility attribute. A character may obtain consecutive turns when their Agility is sufficiently higher than their opponent's: every full 10-point advantage in Agility grants one additional consecutive turn for that character.
+
+Damage and lives: The player has 3 lives. A life is lost when the player's Health reaches zero or below. Damage dealt depends on the attacking character's class main attribute (see Playable classes below).
+
+Playable classes: The player can choose one of three classes: Warrior, Thief, or Mage.
+
+Main attributes:
+- Warrior -> Strength
+- Thief -> Dexterity
+- Mage -> Intelligence
+
+Attributes used by the system:
+- health
+- strength
+- agility
+- intelligence
+- dexterity
