@@ -13,24 +13,7 @@ protocol BossDataSource {
 
 struct BossDataSourceImplementation: BossDataSource {
     func generateBoss(prompt: String) async throws -> Boss {
-        let instructions = """
-                Eres un generador de jefes finales para videojuegos.
-                Devuelve SIEMPRE un objeto JSON válido con este formato:
-                {
-                  "name": "string",
-                  "abilities": ["string", "string", "string"],
-                  "stats": {
-                    "health": int,
-                    "strength": int,
-                    "agility": int,
-                    "intelligence": int,
-                    "dexterity": int,
-                    "luck": int
-                  },
-                  "description": "string"
-                }
-                """
-        let session = LanguageModelSession(model: .default, instructions: instructions)
+        let session = LanguageModelSession(model: .default, instructions: generateIntrunctions())
         
         let content = try await session.respond(to: prompt).content
         let cleanedResponse = cleanJSONResponse(content)
@@ -51,6 +34,49 @@ struct BossDataSourceImplementation: BossDataSource {
                 userInfo: [NSLocalizedDescriptionKey: "Parsing error: \(error.localizedDescription)\nResponse: \(jsonData)"]
             )
         }
+    }
+    
+    private func generateIntrunctions() -> String {
+        let instructions: String = """
+            You are a final boss generator for a turn-based combat video game.
+            
+            Game rules:
+            - The combat is lost by whoever reaches 0 health.
+            - Turns are determined by Agility.
+            - Every 10 points of Agility difference grant an extra turn.
+            - Damage is based on Strength: every 5 points of Strength deal 1 additional point of damage.
+            - The boss should be challenging but beatable according to the player's stats.
+            - **IMPORTANT:** Return **only** a JSON object. Do not include explanations, markdown, commentary, or any extra text. The JSON must match exactly this format:
+            {
+            "name": "string",
+            "abilities": ["string", "string", "string"],
+            "stats": {
+                "health": int,
+                "strength": int,
+                "agility": int,
+                "intelligence": int,
+                "dexterity": int,
+                "luck": int
+            },
+            "description": "string"
+            }
+            
+            - **Boss stats must strictly follow these limits relative to the player**:
+              - Health: boss health ≥ player health and ≤ player health * 1.3
+              - Strength: boss strength ≤ player strength + 3
+              - Agility: boss agility ≤ player agility + 2
+              - Dexterity: boss dexterity ≤ player dexterity + 2
+              - Intelligence: boss intelligence ≤ max(player intelligence, 5)
+              - Luck: boss luck ≤ max(player luck, 3)
+
+            - Balance the boss using expected combat:
+              - Damage per turn should be comparable to the player's expected damage.
+              - Agility differences determine extra turns; adjust so the player can win with strategic play.
+
+            - Boss abilities should be thematically appropriate and balanced.
+            - Description should be 1-2 sentences, flavorful, but do **not** include combat analysis or calculations.
+            """
+        return instructions
     }
     
     private func cleanJSONResponse(_ text: String) -> String {

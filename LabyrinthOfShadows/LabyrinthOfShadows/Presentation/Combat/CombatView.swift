@@ -13,8 +13,8 @@ struct CombatView: View {
     init() {
         let dataSource = BossDataSourceImplementation()
         let repository = BossRepositoryImplementation(generatorDataSource: dataSource)
-        let useCase = GenerateBossUseCaseImplementation(repository: repository)
-        _viewModel = StateObject(wrappedValue: CombatViewModel(generateBossUseCase: useCase))
+        let useCase = StartRunUseCaseImplementation(bossGenerator: repository)
+        _viewModel = StateObject(wrappedValue: CombatViewModel(startRunUseCase: useCase))
     }
     
     var body: some View {

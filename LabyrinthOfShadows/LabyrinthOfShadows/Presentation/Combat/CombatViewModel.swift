@@ -13,21 +13,25 @@ class CombatViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var errorMessage: String?
     
-    private let generateBossUseCase: GenerateBossUseCase
+    private let startRunUseCase: StartRunUseCase
     
-    init(generateBossUseCase: GenerateBossUseCase) {
-        self.generateBossUseCase = generateBossUseCase
+    init(startRunUseCase: StartRunUseCase) {
+        self.startRunUseCase = startRunUseCase
     }
     
     func loadBoss() async {
         isLoading = true
         errorMessage = nil
         do {
-            let result = try await generateBossUseCase()
-            boss = result
+            let run = try await startRunUseCase(for: mockPlayer())
+            boss = run.combats.first?.boss
         } catch {
             errorMessage = error.localizedDescription
         }
         isLoading = false
+    }
+    
+    private func mockPlayer() -> Player {
+        Player(name: "Beldrick", classType: .warrior, stats: [.strength: 10, .agility: 8, .dexterity: 8, .health: 15, .intelligence: 3, .luck: 1])
     }
 }
