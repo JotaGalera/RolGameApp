@@ -22,23 +22,11 @@ struct CombatView: View {
             if viewModel.isLoading {
                 ProgressView("Generating Boss...")
             } else if let boss = viewModel.boss {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("👹 \(boss.name)").font(.title).bold()
-                    Text(boss.description)
+                ZStack(alignment: .top) {
+                    BossCombatView(boss: boss)
                     
-                    Text("Abilities:")
-                        .font(.headline)
-                    ForEach(boss.abilities, id: \.self) { ability in
-                        Text("• \(ability)")
-                    }
-                    
-                    Text("Stats:")
-                        .font(.headline)
-                    ForEach(boss.stats.keys.sorted(by: { $0.rawValue < $1.rawValue }), id: \.self) { stat in
-                        Text("\(stat.rawValue.capitalized): \(boss.stats[stat] ?? 0)")
-                    }
+                    UserCombatView()
                 }
-                .padding()
             } else if let error = viewModel.errorMessage {
                 Text("Error: \(error)").foregroundColor(.red)
             }
@@ -46,6 +34,31 @@ struct CombatView: View {
         .task {
             await viewModel.loadBoss()
         }
+    }
+}
+
+struct BossCombatView: View {
+    var boss: Boss
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("👹 \(boss.name)").font(.title).bold()
+            Text(boss.description)
+            
+            Text("Abilities:")
+                .font(.headline)
+            ForEach(boss.abilities, id: \.self) { ability in
+                Text("• \(ability)")
+            }
+            
+            Text("Stats:")
+                .font(.headline)
+            ForEach(boss.stats.keys.sorted(by: { $0.rawValue < $1.rawValue }), id: \.self) { stat in
+                Text("\(stat.rawValue.capitalized): \(boss.stats[stat] ?? 0)")
+            }
+            
+        }
+        .padding()
     }
 }
 

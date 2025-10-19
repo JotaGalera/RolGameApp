@@ -9,6 +9,7 @@ import Foundation
 
 @MainActor
 class CombatViewModel: ObservableObject {
+    var run: Run?
     @Published var boss: Boss?
     @Published var isLoading = false
     @Published var errorMessage: String?
@@ -23,8 +24,8 @@ class CombatViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         do {
-            let run = try await startRunUseCase(for: mockPlayer())
-            boss = run.combats.first?.boss
+            run = try await startRunUseCase(for: mockPlayer())
+            boss = run?.combats.first?.boss
         } catch {
             errorMessage = error.localizedDescription
         }
