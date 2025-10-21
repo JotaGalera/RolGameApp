@@ -9,6 +9,7 @@ import SwiftUI
 
 struct PlayerCombatActionsView: View {
     @Namespace private var animationNamespace
+    @Binding var canTapButtons: Bool
     @State private var showingAbilities = false
     @State private var abilityCooldowns: [String: Int] = [
         "Slash": 0,
@@ -16,13 +17,17 @@ struct PlayerCombatActionsView: View {
         "Shield Bash": 0,
         "Fury": 0
     ]
-    let abilities: [(name: String, damage: Int, cooldown: Int)] = [
+    var attackAction: (Action) -> Void
+    var opacityButton: Double {
+        canTapButtons ? 1.0 : 0.2
+    }
+    
+    private let abilities: [(name: String, damage: Int, cooldown: Int)] = [
         ("Slash", 3, 2),
         ("Power Strike", 5, 3),
         ("Shield Bash", 2, 1),
         ("Fury", 6, 4)
     ]
-    var attackAction: (Action) -> Void
     private let player = Player(name: "Beldrick",
                                 classType: .warrior,
                                 stats: [.strength: 10,
@@ -67,7 +72,7 @@ struct PlayerCombatActionsView: View {
                                 .cornerRadius(12)
                                 .matchedGeometryEffect(id: ability.name, in: animationNamespace)
                             }
-                            .disabled(abilityCooldowns[ability.name] ?? 0 > 0)
+                            .disabled( (abilityCooldowns[ability.name] ?? 0 > 0) || !canTapButtons )
                         }
                     }
                     .padding()
@@ -90,8 +95,14 @@ struct PlayerCombatActionsView: View {
                         Button("Run") { print("Run pressed") }
                             .buttonStyle(RPGButtonStyle(color: .gray))
                     }
+                    .opacity(opacityButton)
+                    .disabled( !canTapButtons )
                     .padding()
                 }
+            }
+        }.onChange(of: canTapButtons) {
+            if showingAbilities , !canTapButtons {
+                showingAbilities = false
             }
         }
     }
@@ -137,7 +148,5 @@ struct RPGButtonStyle: ButtonStyle {
 }
 
 #Preview {
-    PlayerCombatActionsView(attackAction: { _ in
-        
-    })
+    PlayerCombatActionsView(canTapButtons: .constant(false), attackAction: { _ in })
 }

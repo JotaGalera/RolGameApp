@@ -20,19 +20,26 @@ struct CombatViewModelTests {
         #expect(sut.boss?.name == bossName)
         #expect(sut.isLoading == false)
         #expect(sut.errorMessage == nil)
+        // Due to Player and Boss have the same Agility
+        #expect(sut.isPlayerTurn == true)
 	}
 
     @MainActor
 	@Test func testThatPerformActionAttackReducesBossHealth_When_PerformActionIsCalled_And_PlayerDamageIsCalculated() async throws {
-        let expectedDamage = 3
+        let expectedPlayerDamage = 3
+        let expectedBossDamage = 1
         let bossName = "Stone Ogre"
         let sut = makeSut(bossName: bossName)
 		await sut.startNewRun()
-        let initialHealth = sut.boss!.currentHealth
+        let initialBossHealth = sut.boss!.currentHealth
+        let initialPlayerHealth = sut.player!.currentHealth
 
         sut.performAction(.attack)
 
-		#expect(sut.boss?.currentHealth == max(initialHealth - expectedDamage, 0))
+        #expect(sut.boss?.currentHealth == max(initialBossHealth - expectedPlayerDamage, 0))
+        #expect(sut.player?.currentHealth == max(initialPlayerHealth - expectedBossDamage, 0))
+        // Turn should have returned to player
+        #expect(sut.isPlayerTurn == true)
 	}
 
     @MainActor

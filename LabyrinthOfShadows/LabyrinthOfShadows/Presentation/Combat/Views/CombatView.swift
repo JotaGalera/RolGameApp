@@ -35,7 +35,12 @@ struct CombatView: View {
                     
                     SceneCombatView(boss: boss)
                     
-                    PlayerCombatActionsView { action in
+                    PlayerCombatActionsView(
+                        canTapButtons: Binding<Bool>(
+                            get: { viewModel.isPlayerTurn ?? false },
+                            set: { _ in }
+                        )
+                    ) { action in
                         viewModel.performAction(action)
                     }
                 }
