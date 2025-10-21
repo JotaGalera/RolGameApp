@@ -11,7 +11,7 @@ class Combat {
     var player: Player
     var boss: Boss
     private(set) var currentTurnIndex: Int = 0
-    private var turnOrder: [Turn] {
+    private var turnOrder: [Turn] { // TODO: Move this logic out of the model
         let playerAgility = player.stats[.agility] ?? 0
         let bossAgility = boss.stats[.agility] ?? 0
         
@@ -40,10 +40,14 @@ class Combat {
         self.boss = boss
     }
     
-    func nextTurn() -> Turn {
-        let turn = turnOrder[currentTurnIndex]
+    func nextTurn() -> Turn { // TODO: Move this logic out of the model
         currentTurnIndex = (currentTurnIndex + 1) % turnOrder.count
+        let turn = turnOrder[currentTurnIndex]
         return turn
+    }
+    
+    func getCurrentTurn() -> Turn { // TODO: Move this logic out of the model
+        turnOrder[currentTurnIndex]
     }
 }
 

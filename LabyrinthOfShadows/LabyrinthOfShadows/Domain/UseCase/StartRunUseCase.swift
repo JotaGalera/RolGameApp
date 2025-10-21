@@ -12,9 +12,9 @@ protocol StartRunUseCase {
 }
 
 class StartRunUseCaseImplementation: StartRunUseCase {
-    private let bossGenerator: BossRepository
+    private let bossGenerator: BossGeneratorRepository
     
-    init(bossGenerator: BossRepository) {
+    init(bossGenerator: BossGeneratorRepository) {
         self.bossGenerator = bossGenerator
     }
     

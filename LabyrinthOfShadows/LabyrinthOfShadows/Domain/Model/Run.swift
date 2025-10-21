@@ -16,4 +16,8 @@ struct Run {
     var isFinished: Bool {
         currentCombatIndex >= combats.count || playerIsDead
     }
+    
+    func getCurrentCombat () -> Combat? {
+        return combats[currentCombatIndex]
+    }
 }

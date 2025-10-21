@@ -25,4 +25,22 @@ struct Boss: Codable {
             return (stat, value)
         })
     }
+    
+    init (name: String,
+          abilities: [String],
+          stats: [Stats: Int],
+          description: String) {
+        self.name = name
+        self.abilities = abilities
+        self.stats = stats
+        self.description = description
+    }
+    
+    func convertToPresentationModel() -> BossModel {
+        return BossModel(name: name,
+                         abilities: abilities,
+                         description: description,
+                         maxHealth: stats[.health] ?? 0,
+                         damage: stats[.strength] ?? 0)
+    }
 }

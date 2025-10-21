@@ -1,5 +1,5 @@
 //
-//  BossRepositoryImplementation.swift
+//  BossGeneratorImplementation.swift
 //  LabyrinthOfShadows
 //
 //  Created by Javier Galera Garrido on 27/8/25.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct BossRepositoryImplementation: BossRepository {
+struct BossGeneratorRepositoryImplementation: BossGeneratorRepository {
     private let generatorDataSource: BossDataSource
     
     init(generatorDataSource: BossDataSource) {

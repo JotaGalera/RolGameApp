@@ -36,7 +36,7 @@ struct BossDataSourceImplementation: BossDataSource {
         }
     }
     
-    private func generateIntrunctions() -> String {
+    func generateIntrunctions() -> String {
         let instructions: String = """
             You are a final boss generator for a turn-based combat video game.
             
@@ -79,7 +79,7 @@ struct BossDataSourceImplementation: BossDataSource {
         return instructions
     }
     
-    private func cleanJSONResponse(_ text: String) -> String {
+    func cleanJSONResponse(_ text: String) -> String {
         var cleaned = text
         
         cleaned = cleaned.replacingOccurrences(of: "```json", with: "")

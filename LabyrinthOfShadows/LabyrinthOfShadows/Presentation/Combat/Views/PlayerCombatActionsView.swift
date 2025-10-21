@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct UserCombatView: View {
+struct PlayerCombatActionsView: View {
     @Namespace private var animationNamespace
     @State private var showingAbilities = false
     @State private var abilityCooldowns: [String: Int] = [
@@ -16,13 +16,21 @@ struct UserCombatView: View {
         "Shield Bash": 0,
         "Fury": 0
     ]
-
     let abilities: [(name: String, damage: Int, cooldown: Int)] = [
         ("Slash", 3, 2),
         ("Power Strike", 5, 3),
         ("Shield Bash", 2, 1),
         ("Fury", 6, 4)
     ]
+    var attackAction: (Action) -> Void
+    private let player = Player(name: "Beldrick",
+                                classType: .warrior,
+                                stats: [.strength: 10,
+                                   .agility: 8,
+                                   .dexterity: 8,
+                                   .health: 15,
+                                   .intelligence: 3,
+                                   .luck: 1])
 
     var body: some View {
         ZStack {
@@ -34,8 +42,12 @@ struct UserCombatView: View {
                     }
                 }
 
-            VStack {
+            VStack(alignment: .center) {
                 Spacer()
+                
+                PlayerHUDView(player: player)
+                    .padding()
+                    
                 
                 if showingAbilities {
                     let columns = [GridItem(.flexible()), GridItem(.flexible())]
@@ -61,10 +73,11 @@ struct UserCombatView: View {
                     .padding()
                     .transition(.scale.combined(with: .opacity))
                 } else {
-                    // Botones principales
                     HStack(spacing: 16) {
-                        Button("Attack") { print("Attack pressed") }
-                            .buttonStyle(RPGButtonStyle(color: .red))
+                        Button("Attack") {
+                            attackAction(.attack)
+                        }
+                        .buttonStyle(RPGButtonStyle(color: .red))
 
                         Button("Abilities") {
                             withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
@@ -80,7 +93,6 @@ struct UserCombatView: View {
                     .padding()
                 }
             }
-            .padding()
         }
     }
 
@@ -125,5 +137,7 @@ struct RPGButtonStyle: ButtonStyle {
 }
 
 #Preview {
-    UserCombatView()
+    PlayerCombatActionsView(attackAction: { _ in
+        
+    })
 }

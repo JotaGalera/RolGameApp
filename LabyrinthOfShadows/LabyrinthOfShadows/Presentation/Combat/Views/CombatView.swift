@@ -9,10 +9,18 @@ import SwiftUI
 
 struct CombatView: View {
     @StateObject private var viewModel: CombatViewModel
+    private let player = Player(name: "Beldrick",
+                                classType: .warrior,
+                                stats: [.strength: 10,
+                                   .agility: 8,
+                                   .dexterity: 8,
+                                   .health: 15,
+                                   .intelligence: 3,
+                                   .luck: 1])
     
     init() {
         let dataSource = BossDataSourceImplementation()
-        let repository = BossRepositoryImplementation(generatorDataSource: dataSource)
+        let repository = BossGeneratorRepositoryImplementation(generatorDataSource: dataSource)
         let useCase = StartRunUseCaseImplementation(bossGenerator: repository)
         _viewModel = StateObject(wrappedValue: CombatViewModel(startRunUseCase: useCase))
     }
@@ -22,23 +30,27 @@ struct CombatView: View {
             if viewModel.isLoading {
                 ProgressView("Generating Boss...")
             } else if let boss = viewModel.boss {
-                ZStack(alignment: .top) {
-                    BossCombatView(boss: boss)
+                VStack {
+                    BossView(boss: boss)
                     
-                    UserCombatView()
+                    SceneCombatView(boss: boss)
+                    
+                    PlayerCombatActionsView { action in
+                        viewModel.performAction(action)
+                    }
                 }
             } else if let error = viewModel.errorMessage {
                 Text("Error: \(error)").foregroundColor(.red)
             }
         }
         .task {
-            await viewModel.loadBoss()
+            await viewModel.startNewRun()
         }
     }
 }
 
-struct BossCombatView: View {
-    var boss: Boss
+struct SceneCombatView: View {
+    var boss: BossModel
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -51,12 +63,9 @@ struct BossCombatView: View {
                 Text("• \(ability)")
             }
             
-            Text("Stats:")
+            Text("Boss Damage:")
                 .font(.headline)
-            ForEach(boss.stats.keys.sorted(by: { $0.rawValue < $1.rawValue }), id: \.self) { stat in
-                Text("\(stat.rawValue.capitalized): \(boss.stats[stat] ?? 0)")
-            }
-            
+            Text("• \(boss.damage)")
         }
         .padding()
     }
