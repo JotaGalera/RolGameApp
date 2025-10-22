@@ -7,7 +7,7 @@
 import Foundation
 import FoundationModels
 
-protocol BossDataSource {
+protocol BossDataSource: AutoMockable {
     func generateBoss(prompt: String) async throws -> Boss
 }
 

@@ -2,14 +2,8 @@ import Testing
 @testable import LabyrinthOfShadows
 
 struct CombatViewModelTests {
-
-	private struct FakeStartRunUseCase: StartRunUseCase {
-		let run: Run
-		func callAsFunction(for player: Player) async throws -> Run {
-			return run
-		}
-	}
-
+    var startRunUseCaseMock = StartRunUseCaseMock()
+    
     @MainActor
 	@Test func testThatBossIsSet_When_startNewRunIsCalled_And_StartRunUseCaseReturnsRun() async throws {
 		let bossName = "Stone Ogre"
@@ -20,6 +14,7 @@ struct CombatViewModelTests {
         #expect(sut.boss?.name == bossName)
         #expect(sut.isLoading == false)
         #expect(sut.errorMessage == nil)
+        #expect(startRunUseCaseMock.callAsFunctionForPlayerPlayerRunCallsCount == 1)
         // Due to Player and Boss have the same Agility
         #expect(sut.isPlayerTurn == true)
 	}
@@ -44,12 +39,13 @@ struct CombatViewModelTests {
 
     @MainActor
     private func makeSut(bossName: String) -> CombatViewModel {
-        let boss = Boss(name: bossName, abilities: [], stats: [.health: 40, .strength: 0, .agility: 5], description: "A test boss")
-        let player = Player(name: "Tester", classType: .warrior, stats: [.health: 30, .strength: 10, .agility: 5], lives: 3)
-        let combat = Combat(player: player, boss: boss)
-        let run = Run(combats: [combat], currentCombatIndex: 0)
-        let fakeUseCase = FakeStartRunUseCase(run: run)
-        return CombatViewModel(startRunUseCase: fakeUseCase)
+        let bossMock = Boss(name: bossName, abilities: [], stats: [.health: 40, .strength: 0, .agility: 5], description: "A test boss")
+        let playerMock = Player(name: "Tester", classType: .warrior, stats: [.health: 30, .strength: 10, .agility: 5], lives: 3)
+        let combatMock = Combat(player: playerMock, boss: bossMock)
+        let runMock = Run(combats: [combatMock], currentCombatIndex: 0)
+        startRunUseCaseMock.callAsFunctionForPlayerPlayerRunReturnValue = runMock
+        
+        return CombatViewModel(startRunUseCase: startRunUseCaseMock)
     }
 }
 

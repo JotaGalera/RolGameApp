@@ -9,26 +9,15 @@ import Testing
 @testable import LabyrinthOfShadows
 
 struct BossGeneratorRepositoryTests {
-
-	private struct FakeDataSource: BossDataSource {
-		let bossToReturn: Boss
-		func generateBoss(prompt: String) async throws -> Boss {
-			return bossToReturn
-		}
-	}
-
 	@Test func testThatRepositoryReturnsBoss_When_DataSourceSucceeds() async throws {
-		// Given
 		let expectedBoss = Boss(name: "RepoBoss", abilities: ["Stomp"], stats: [.health: 35, .strength: 6, .agility: 4], description: "repo boss")
-		let fake = FakeDataSource(bossToReturn: expectedBoss)
-		let sut = BossGeneratorRepositoryImplementation(generatorDataSource: fake)
+		let generatorDataSourceMock = BossDataSourceMock()
+        generatorDataSourceMock.generateBossPromptStringBossReturnValue = expectedBoss
+		let sut = BossGeneratorRepositoryImplementation(generatorDataSource: generatorDataSourceMock)
 
-		// When
 		let boss = try await sut.getBosses(prompt: "prompt")
 
-		// Then
 		#expect(boss.name == expectedBoss.name)
 		#expect(boss.stats[.health] == expectedBoss.stats[.health])
 	}
-
 }

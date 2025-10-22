@@ -32,3 +32,6 @@ playground.xcworkspace
 
 #Keys
 Keys.plist
+
+#Third Party
+LabyrinthOfShadows/Dependencies/*

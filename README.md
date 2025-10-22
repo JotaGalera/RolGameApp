@@ -16,6 +16,10 @@ Every decision made by the player influences how the algorithm creates new enemi
 - [SwiftUI](https://developer.apple.com/xcode/swiftui/)  
 - [Foundation Models](https://developer.apple.com/documentation/FoundationModels)
 - [Xcode](https://developer.apple.com/xcode/)
+- [Sourcery](https://github.com/krzysztofzablocki/Sourcery) Mocks generation.
+
+*About Sourcery*
+To use Sourcery, download binary an unzip in Dependencies. Rename the folder as: "sourcery". Then just run ./run-automockable from the project root folder.
 
 ## Game Description
 

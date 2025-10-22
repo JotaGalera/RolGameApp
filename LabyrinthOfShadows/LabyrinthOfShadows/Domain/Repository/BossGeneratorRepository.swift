@@ -7,6 +7,6 @@
 
 import Foundation
 
-protocol BossGeneratorRepository {
+protocol BossGeneratorRepository: AutoMockable {
     func getBosses(prompt: String) async throws -> Boss
 }

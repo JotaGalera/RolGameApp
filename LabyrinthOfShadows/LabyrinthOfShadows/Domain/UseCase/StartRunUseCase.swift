@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol StartRunUseCase {
+protocol StartRunUseCase: AutoMockable {
     func callAsFunction(for player: Player) async throws -> Run
 }
 
