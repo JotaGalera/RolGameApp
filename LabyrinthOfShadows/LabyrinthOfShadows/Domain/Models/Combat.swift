@@ -10,7 +10,9 @@ import Foundation
 class Combat {
     var player: Player
     var boss: Boss
+    
     private(set) var currentTurnIndex: Int = 0
+    
     private var turnOrder: [Turn] { // TODO: Move this logic out of the model
         let playerAgility = player.stats[.agility] ?? 0
         let bossAgility = boss.stats[.agility] ?? 0

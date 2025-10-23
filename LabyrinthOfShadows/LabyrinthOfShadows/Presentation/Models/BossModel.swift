@@ -41,4 +41,11 @@ struct BossModel {
                          currentHealth: max(currentHealth - amount, 0),
                          damage: damage)
     }
+    
+    func convertToDomain() -> Boss {
+        Boss(name: name,
+             abilities: abilities,
+             stats: [.health: currentHealth],
+             description: description)
+    }
 }

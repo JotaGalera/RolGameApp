@@ -103,6 +103,35 @@ class BossGeneratorRepositoryMock: BossGeneratorRepository {
 
 
 }
+class CheckCombatVictoryConditionUseCaseMock: CheckCombatVictoryConditionUseCase {
+
+
+
+
+    //MARK: - callAsFunction
+
+    var callAsFunctionPlayerPlayerBossBossCombatVictoryConditionCallsCount = 0
+    var callAsFunctionPlayerPlayerBossBossCombatVictoryConditionCalled: Bool {
+        return callAsFunctionPlayerPlayerBossBossCombatVictoryConditionCallsCount > 0
+    }
+    var callAsFunctionPlayerPlayerBossBossCombatVictoryConditionReceivedArguments: (player: Player, boss: Boss)?
+    var callAsFunctionPlayerPlayerBossBossCombatVictoryConditionReceivedInvocations: [(player: Player, boss: Boss)] = []
+    var callAsFunctionPlayerPlayerBossBossCombatVictoryConditionReturnValue: CombatVictoryCondition!
+    var callAsFunctionPlayerPlayerBossBossCombatVictoryConditionClosure: ((Player, Boss) -> CombatVictoryCondition)?
+
+    func callAsFunction(player: Player, boss: Boss) -> CombatVictoryCondition {
+        callAsFunctionPlayerPlayerBossBossCombatVictoryConditionCallsCount += 1
+        callAsFunctionPlayerPlayerBossBossCombatVictoryConditionReceivedArguments = (player: player, boss: boss)
+        callAsFunctionPlayerPlayerBossBossCombatVictoryConditionReceivedInvocations.append((player: player, boss: boss))
+        if let callAsFunctionPlayerPlayerBossBossCombatVictoryConditionClosure = callAsFunctionPlayerPlayerBossBossCombatVictoryConditionClosure {
+            return callAsFunctionPlayerPlayerBossBossCombatVictoryConditionClosure(player, boss)
+        } else {
+            return callAsFunctionPlayerPlayerBossBossCombatVictoryConditionReturnValue
+        }
+    }
+
+
+}
 class StartRunUseCaseMock: StartRunUseCase {
 
 
