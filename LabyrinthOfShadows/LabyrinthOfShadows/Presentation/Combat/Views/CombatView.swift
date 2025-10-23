@@ -19,10 +19,7 @@ struct CombatView: View {
                                    .luck: 1])
     
     init() {
-        let dataSource = BossDataSourceImplementation()
-        let repository = BossGeneratorRepositoryImplementation(generatorDataSource: dataSource)
-        let useCase = StartRunUseCaseImplementation(bossGenerator: repository)
-        _viewModel = StateObject(wrappedValue: CombatViewModel(startRunUseCase: useCase))
+        _viewModel = StateObject(wrappedValue: CombatViewModel(startRunUseCase: StartRunUseCaseFactory.make()))
     }
     
     var body: some View {
