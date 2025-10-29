@@ -7,43 +7,46 @@
 
 import Foundation
 
+struct CombatPhase: Equatable {
+    let state: CombatViewModel.CombatState
+    let turn: Participant
+    let victoryCondition: CombatVictoryCondition
+}
+
 @MainActor
 class CombatViewModel: ObservableObject {
     var run: Run?
     @Published var boss: BossModel?
     var player: PlayerModel?
-    @Published var viewState: CombatState = .loading
+    @Published var phase: CombatPhase?
     @Published var errorMessage: String?
-    @Published var isPlayerTurn: Bool?
-    @Published var combatStatus: CombatVictoryCondition?
     
     private let startRunUseCase: StartRunUseCase
     private let checkVictoryConditionUseCase: CheckCombatVictoryConditionUseCase
+    private let getDamageCalculatedUseCase: GetDamageCalculatedUseCase
     
     enum CombatState: Equatable {
+        case undefined
         case loading
         case inProgress
         case victory
         case defeat
         case runVictory
-        case newGame
     }
     
-    init(startRunUseCase: StartRunUseCase, checkVictoryConditionUseCase: CheckCombatVictoryConditionUseCase) {
+    init(startRunUseCase: StartRunUseCase, checkVictoryConditionUseCase: CheckCombatVictoryConditionUseCase, getDamageCalculatedUseCase: GetDamageCalculatedUseCase) {
         self.startRunUseCase = startRunUseCase
         self.checkVictoryConditionUseCase = checkVictoryConditionUseCase
+        self.getDamageCalculatedUseCase = getDamageCalculatedUseCase
     }
     
     func startNewRun() async {
-        viewState = .loading
+        updatePhase(.loading)
         errorMessage = nil
         do {
             run = try await startRunUseCase(for: mockPlayer())
-            
             guard let combat = run?.getCurrentCombat() else { return }
-            
             startNewCombat(combat)
-
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -52,27 +55,30 @@ class CombatViewModel: ObservableObject {
     func startNewCombat(_ combat: Combat) {
         boss = combat.boss.convertToPresentationModel()
         player = combat.player.convertToPresentationModel()
-        isPlayerTurn = combat.getCurrentTurn().participant == .player
         
-        viewState = .inProgress
-        updateCombatStatus()
+        let currentTurn: Participant = combat.getCurrentTurn().participant
+        let status = checkVictoryCondition(for: player, and: boss)
+        updatePhase(.inProgress, turn: currentTurn, condition: status)
         
-        //TODO: Trigger just in case Boss has more agility than the player
-        if isPlayerTurn == false {
+        // Si empieza el boss, actuará primero
+        if currentTurn == .boss {
             bossActionMocked()
         }
     }
     
-    private func updateCombatStatus() {
-        guard let player, let boss else { return }
-        
-        combatStatus = checkVictoryConditionUseCase(player: player.convertToDomain(), boss: boss.convertToDomain())
+    private func checkVictoryCondition(for player: PlayerModel?, and boss: BossModel?) -> CombatVictoryCondition {
+        guard let player, let boss else { return .ongoing }
+        return checkVictoryConditionUseCase(player: player.convertToDomain(), boss: boss.convertToDomain())
+    }
+    
+    private func updatePhase(_ state: CombatState, turn: Participant = .player, condition: CombatVictoryCondition = .ongoing) {
+        phase = CombatPhase(state: state, turn: turn, victoryCondition: condition)
     }
     
     func performAction(_ action: Action) {
+        guard let player else { return }
         switch action {
         case .attack:
-            guard let player else { return }
             let damage = calculateDamage(from: player.damage)
             boss = boss?.updateHealth(amount: damage)
             
@@ -81,35 +87,33 @@ class CombatViewModel: ObservableObject {
     }
     
     private func calculateDamage(from strength: Int) -> Int {
-        return 1 + (strength / 5)
+        return getDamageCalculatedUseCase(for: strength)
     }
-
+    
     private func checkCombatStatus() {
-        updateCombatStatus()
+        guard let player, let boss else { return }
         
-        switch combatStatus {
+        let condition = checkVictoryCondition(for: player, and: boss)
+        switch condition {
         case .ongoing:
-            viewState = .inProgress
             nextTurn()
         case .playerVictory:
-            viewState = .victory
+            updatePhase(.victory, turn: .player, condition: condition)
         case .playerDefeat:
-            viewState = .defeat
-        case nil:
-            return
+            updatePhase(.defeat, turn: .boss, condition: condition)
         }
     }
     
     private func nextTurn() {
-        let newTurn = run?.getCurrentCombat()?.nextTurn()
-        isPlayerTurn = newTurn?.participant == .player
+        let nextTurnParticipant: Participant = run?.getCurrentCombat()?.nextTurn().participant ?? .player
+        updatePhase(.inProgress, turn: nextTurnParticipant, condition: .ongoing)
         
-        if isPlayerTurn == false {
+        if nextTurnParticipant == .boss {
             bossActionMocked()
         }
     }
     
-    private func bossActionMocked() { // TODO: Make a boss logic
+    private func bossActionMocked() {
         guard let boss else { return }
         let damage = calculateDamage(from: boss.damage)
         player = player?.updateHealth(amount: damage)
@@ -119,22 +123,21 @@ class CombatViewModel: ObservableObject {
     
     func nextCombat() {
         guard let newCombat = run?.nextCombat() else {
-            finishGame()
+            finishRun()
             return
         }
         
         startNewCombat(newCombat)
     }
     
-    private func finishGame() {
+    private func finishRun() {
         if run?.isPlayerWinner == true {
-            viewState = .runVictory
+            updatePhase(.runVictory, turn: .player, condition: .playerVictory)
         } else {
-            viewState = .defeat
+            updatePhase(.defeat, turn: .boss, condition: .playerDefeat)
         }
     }
     
-        
     private func mockPlayer() -> Player {
         Player(name: "Beldrick", classType: .warrior, stats: [.strength: 10, .agility: 8, .dexterity: 8, .health: 15, .intelligence: 3, .luck: 1])
     }

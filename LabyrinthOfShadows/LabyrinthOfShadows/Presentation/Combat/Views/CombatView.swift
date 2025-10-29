@@ -20,55 +20,69 @@ struct CombatView: View {
     
     init() {
         _viewModel = StateObject(wrappedValue: CombatViewModel(startRunUseCase: StartRunUseCaseFactory.make(),
-                                                               checkVictoryConditionUseCase: CheckVictoryConditionUseCaseFactory.make()))
+                                                               checkVictoryConditionUseCase: CheckVictoryConditionUseCaseFactory.make(), getDamageCalculatedUseCase: GetDamageCalculatedUseCaseFactory.make()))
     }
     
     var body: some View {
         VStack {
-            if viewModel.viewState == .loading {
+            switch viewModel.phase?.state {
+            case .loading:
                 ProgressView("Generating Boss...")
-            } else if let boss = viewModel.boss, viewModel.viewState == .inProgress {
-                VStack {
-                    BossView(boss: boss)
-                    
-                    SceneCombatView(boss: boss)
-                    
-                    PlayerCombatActionsView(
-                        canTapButtons: Binding<Bool>(
-                            get: { viewModel.isPlayerTurn ?? false },
-                            set: { _ in }
-                        )
-                    ) { action in
-                        viewModel.performAction(action)
+                
+            case .inProgress:
+                if let boss = viewModel.boss {
+                    VStack {
+                        BossView(boss: boss)
+                        
+                        SceneCombatView(boss: boss)
+                        
+                        PlayerCombatActionsView(
+                            canTapButtons: Binding<Bool>(
+                                get: { viewModel.phase?.turn == .player },
+                                set: { _ in }
+                            )
+                        ) { action in
+                            viewModel.performAction(action)
+                        }
                     }
                 }
-            } else if viewModel.viewState == .victory {
-                Text(" Player is the Winner !!!")
                 
-                Button("Next Combat") {
-                    viewModel.nextCombat()
-                }
-                .buttonStyle(RPGButtonStyle(color: .blue))
-            } else if viewModel.viewState == .defeat {
-                Text(" Player die !!!")
-                
-                Button("Next Combat") {
-                    Task {
-                        await viewModel.startNewRun()
+            case .victory:
+                VStack(spacing: 16) {
+                    Text("🏆 ¡Has derrotado al jefe!")
+                        .font(.title2)
+                    Button("Siguiente combate") {
+                        viewModel.nextCombat()
                     }
+                    .buttonStyle(RPGButtonStyle(color: .blue))
                 }
-                .buttonStyle(RPGButtonStyle(color: .red))
-            } else if viewModel.viewState == .runVictory {
-                Text(" Your pass the RUN !!!!")
                 
-                Button("New Run") {
-                    Task {
-                        await viewModel.startNewRun()
+            case .defeat:
+                VStack(spacing: 16) {
+                    Text("💀 Has sido derrotado")
+                        .font(.title2)
+                    Button("Empezar nueva partida") {
+                        Task {
+                            await viewModel.startNewRun()
+                        }
                     }
+                    .buttonStyle(RPGButtonStyle(color: .red))
                 }
-                .buttonStyle(RPGButtonStyle(color: .red))
-            } else if let error = viewModel.errorMessage {
-                Text("Error: \(error)").foregroundColor(.red)
+                
+            case .runVictory:
+                VStack(spacing: 16) {
+                    Text("🌟 ¡Has completado la run!")
+                        .font(.title2)
+                    Button("Nueva Run") {
+                        Task {
+                            await viewModel.startNewRun()
+                        }
+                    }
+                    .buttonStyle(RPGButtonStyle(color: .green))
+                }
+                
+            default:
+                EmptyView()
             }
         }
         .task {
