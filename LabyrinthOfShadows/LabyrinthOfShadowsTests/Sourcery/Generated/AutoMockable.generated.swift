@@ -132,6 +132,35 @@ class CheckCombatVictoryConditionUseCaseMock: CheckCombatVictoryConditionUseCase
 
 
 }
+class GetDamageCalculatedUseCaseMock: GetDamageCalculatedUseCase {
+
+
+
+
+    //MARK: - callAsFunction
+
+    var callAsFunctionForDamageIntIntCallsCount = 0
+    var callAsFunctionForDamageIntIntCalled: Bool {
+        return callAsFunctionForDamageIntIntCallsCount > 0
+    }
+    var callAsFunctionForDamageIntIntReceivedDamage: (Int)?
+    var callAsFunctionForDamageIntIntReceivedInvocations: [(Int)] = []
+    var callAsFunctionForDamageIntIntReturnValue: Int!
+    var callAsFunctionForDamageIntIntClosure: ((Int) -> Int)?
+
+    func callAsFunction(for damage: Int) -> Int {
+        callAsFunctionForDamageIntIntCallsCount += 1
+        callAsFunctionForDamageIntIntReceivedDamage = damage
+        callAsFunctionForDamageIntIntReceivedInvocations.append(damage)
+        if let callAsFunctionForDamageIntIntClosure = callAsFunctionForDamageIntIntClosure {
+            return callAsFunctionForDamageIntIntClosure(damage)
+        } else {
+            return callAsFunctionForDamageIntIntReturnValue
+        }
+    }
+
+
+}
 class StartRunUseCaseMock: StartRunUseCase {
 
 
