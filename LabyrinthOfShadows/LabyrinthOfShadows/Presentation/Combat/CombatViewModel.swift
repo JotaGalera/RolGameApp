@@ -105,7 +105,7 @@ class CombatViewModel: ObservableObject {
     }
     
     private func nextTurn() {
-        let nextTurnParticipant: Participant = run?.getCurrentCombat()?.nextTurn().participant ?? .player
+        let nextTurnParticipant: Participant = (run?.getCurrentCombat()?.nextTurn())?.participant ?? .player
         updatePhase(.inProgress, turn: nextTurnParticipant, condition: .ongoing)
         
         if nextTurnParticipant == .boss {

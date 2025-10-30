@@ -194,3 +194,46 @@ class StartRunUseCaseMock: StartRunUseCase {
 
 
 }
+class TurnManagerMock: TurnManager {
+
+
+
+
+    //MARK: - nextTurn
+
+    var nextTurnTurnCallsCount = 0
+    var nextTurnTurnCalled: Bool {
+        return nextTurnTurnCallsCount > 0
+    }
+    var nextTurnTurnReturnValue: Turn!
+    var nextTurnTurnClosure: (() -> Turn)?
+
+    func nextTurn() -> Turn {
+        nextTurnTurnCallsCount += 1
+        if let nextTurnTurnClosure = nextTurnTurnClosure {
+            return nextTurnTurnClosure()
+        } else {
+            return nextTurnTurnReturnValue
+        }
+    }
+
+    //MARK: - getCurrentTurn
+
+    var getCurrentTurnTurnCallsCount = 0
+    var getCurrentTurnTurnCalled: Bool {
+        return getCurrentTurnTurnCallsCount > 0
+    }
+    var getCurrentTurnTurnReturnValue: Turn!
+    var getCurrentTurnTurnClosure: (() -> Turn)?
+
+    func getCurrentTurn() -> Turn {
+        getCurrentTurnTurnCallsCount += 1
+        if let getCurrentTurnTurnClosure = getCurrentTurnTurnClosure {
+            return getCurrentTurnTurnClosure()
+        } else {
+            return getCurrentTurnTurnReturnValue
+        }
+    }
+
+
+}
