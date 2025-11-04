@@ -32,18 +32,30 @@ struct PlayerModel {
         self.maxHealth = maxHealth
         self.currentHealth = currentHealth
         self.maxLives = maxLives
-        self.currentLives = maxLives
+        self.currentLives = currentLives
         self.damage = damage
     }
     
     func updateHealth(amount: Int) -> PlayerModel {
-        PlayerModel(name: name,
-                    classType: classType,
-                    maxHealth: maxHealth,
-                    currentHealth: max(currentHealth - amount, 0),
-                    maxLives: maxLives,
-                    currentLives: currentLives,
-                    damage: damage)
+        let newHealth = currentHealth - amount
+        
+        if newHealth > 0 {
+            return PlayerModel(name: name,
+                               classType: classType,
+                               maxHealth: maxHealth,
+                               currentHealth: newHealth,
+                               maxLives: maxLives,
+                               currentLives: currentLives,
+                               damage: damage)
+        } else {
+            return PlayerModel(name: name,
+                                     classType: classType,
+                                     maxHealth: maxHealth,
+                                     currentHealth: maxHealth,
+                                     maxLives: maxLives,
+                                     currentLives: max(currentLives - 1, 0),
+                                     damage: damage)
+        }
     }
     
     func convertToDomain() -> Player {

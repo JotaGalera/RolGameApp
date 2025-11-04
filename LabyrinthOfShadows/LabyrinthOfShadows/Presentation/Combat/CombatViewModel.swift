@@ -17,7 +17,7 @@ struct CombatPhase: Equatable {
 class CombatViewModel: ObservableObject {
     var run: Run?
     @Published var boss: BossModel?
-    var player: PlayerModel?
+    @Published var player: PlayerModel?
     @Published var phase: CombatPhase?
     @Published var errorMessage: String?
     
@@ -139,6 +139,6 @@ class CombatViewModel: ObservableObject {
     }
     
     private func mockPlayer() -> Player {
-        Player(name: "Beldrick", classType: .warrior, stats: [.strength: 10, .agility: 8, .dexterity: 8, .health: 15, .intelligence: 3, .luck: 1])
+        Player(name: "Beldrick", classType: .warrior, stats: [.strength: 10, .agility: 8, .dexterity: 8, .health: 20, .intelligence: 3, .luck: 1])
     }
 }

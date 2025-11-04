@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct BossView: View {
-    let boss: BossModel
+    @Binding var boss: BossModel
     var currentHealth: Int {
         boss.currentHealth
     }
@@ -16,17 +16,7 @@ struct BossView: View {
         boss.maxHealth
     }
     
-    private var healthPercentage: Double {
-            Double(currentHealth) / Double(maxHealth)
-        }
-
-        private var barColor: Color {
-            switch healthPercentage {
-            case 0.6...1.0: return .green
-            case 0.3..<0.6: return .yellow
-            default: return .red
-            }
-        }
+    
     
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -36,33 +26,21 @@ struct BossView: View {
                 .font(.headline)
                 .foregroundColor(.white)
             
-            GeometryReader { proxy in
-                ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.gray.opacity(0.4))
-                        .frame(height: 18)
-                    
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(barColor)
-                        .frame(width: max(0, min(1, healthPercentage)) * proxy.size.width,
-                               height: 18)
-                        .animation(.easeInOut(duration: 0.3), value: currentHealth)
-                }
-            }
-            .frame(height: 18)
+            HealthBarView(currentHealth: Binding<Int>(get: { currentHealth }, set: { _ in }),
+                          maxHealth: Binding<Int>(get: { maxHealth }, set: { _ in }))
             
-            Text("\(currentHealth) / \(maxHealth)")
-                .font(.caption)
-                .foregroundColor(.black.opacity(0.7))
+            
         }
         .padding(.horizontal)
     }
 }
 
+
+
 #Preview {
-    BossView(boss: BossModel(name: "Dragon",
-                             abilities: ["Dragon flames", "Breathe fire", "Tail swipe"],
-                             description: "A fearsome dragon with fiery breath and razor-sharp claws.",
-                             maxHealth: 150,
-                             damage: 12))
+    BossView(boss: .constant(BossModel(name: "Dragon",
+                                       abilities: ["Dragon flames", "Breathe fire", "Tail swipe"],
+                                       description: "A fearsome dragon with fiery breath and razor-sharp claws.",
+                                       maxHealth: 150,
+                                       damage: 12)))
 }

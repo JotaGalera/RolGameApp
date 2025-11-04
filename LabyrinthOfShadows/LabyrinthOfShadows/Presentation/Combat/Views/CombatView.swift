@@ -30,15 +30,22 @@ struct CombatView: View {
                 ProgressView("Generating Boss...")
                 
             case .inProgress:
-                if let boss = viewModel.boss {
+                if let boss = viewModel.boss, let player = viewModel.player {
                     VStack {
-                        BossView(boss: boss)
+                        BossView(boss: Binding<BossModel>(
+                            get: { boss },
+                            set: { _ in }
+                        ))
                         
                         SceneCombatView(boss: boss)
                         
                         PlayerCombatActionsView(
                             canTapButtons: Binding<Bool>(
                                 get: { viewModel.phase?.turn == .player },
+                                set: { _ in }
+                            ),
+                            player: Binding<PlayerModel>(
+                                get: { player },
                                 set: { _ in }
                             )
                         ) { action in

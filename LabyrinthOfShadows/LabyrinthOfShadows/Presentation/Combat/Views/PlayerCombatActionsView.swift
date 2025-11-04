@@ -10,6 +10,7 @@ import SwiftUI
 struct PlayerCombatActionsView: View {
     @Namespace private var animationNamespace
     @Binding var canTapButtons: Bool
+    @Binding var player: PlayerModel
     @State private var showingAbilities = false
     @State private var abilityCooldowns: [String: Int] = [
         "Slash": 0,
@@ -28,14 +29,6 @@ struct PlayerCombatActionsView: View {
         ("Shield Bash", 2, 1),
         ("Fury", 6, 4)
     ]
-    private let player = Player(name: "Beldrick",
-                                classType: .warrior,
-                                stats: [.strength: 10,
-                                   .agility: 8,
-                                   .dexterity: 8,
-                                   .health: 15,
-                                   .intelligence: 3,
-                                   .luck: 1])
 
     var body: some View {
         ZStack {
@@ -50,7 +43,7 @@ struct PlayerCombatActionsView: View {
             VStack(alignment: .center) {
                 Spacer()
                 
-                PlayerHUDView(player: player)
+                PlayerHUDView(player: $player)
                     .padding()
                     
                 
@@ -148,5 +141,11 @@ struct RPGButtonStyle: ButtonStyle {
 }
 
 #Preview {
-    PlayerCombatActionsView(canTapButtons: .constant(false), attackAction: { _ in })
+    PlayerCombatActionsView(canTapButtons: .constant(false),
+                            player: .constant(PlayerModel(name: "Beldrick",
+                                                          classType: .warrior,
+                                                          maxHealth: 100,
+                                                          maxLives: 3,
+                                                          damage: 10)),
+                            attackAction: { _ in })
 }
