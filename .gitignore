@@ -35,3 +35,6 @@ Keys.plist
 
 #Third Party
 LabyrinthOfShadows/Dependencies/*
+
+# Warp rules file (local-only)
+WARP.md
